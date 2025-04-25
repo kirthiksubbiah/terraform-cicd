@@ -14,8 +14,8 @@ module "networking" {
 }
 
 module "rds" {
-  source         = "./modules/rds"
-  project_prefix = var.project_prefix
+  source               = "./modules/rds"
+  project_prefix       = var.project_prefix
   db_subnet_group_name = module.networking.db_subnet_group_name
-  aws_security_group = module.networking.aws_security_group
+  aws_security_group   = module.networking.aws_security_group
 }
