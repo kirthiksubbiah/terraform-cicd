@@ -56,7 +56,7 @@ sleep 10
 #updating the file with details of internal loadbalancer
 cd /etc/nginx
 sudo rm nginx.conf
-sudo aws s3 cp s3://project9-code-bucket/nginx.conf .
+sudo aws s3 cp s3://${project_prefix}-code-bucket/nginx.conf .
 
 sleep 10
 
