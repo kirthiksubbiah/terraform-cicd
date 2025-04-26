@@ -87,9 +87,9 @@ resource "aws_lb_listener" "internal_app_listener" {
 
 # Auto Scaling Group for App Tier
 resource "aws_autoscaling_group" "app_asg" {
-  desired_capacity          = 0
-  min_size                  = 0
-  max_size                  = 0
+  desired_capacity          = 2
+  min_size                  = 2
+  max_size                  = 3
   name                      = "${var.project_prefix}-app-asg"
   vpc_zone_identifier       = var.private_app_subnet_ids
 
@@ -207,9 +207,9 @@ resource "aws_lb_listener" "external_web_listener" {
 
 # Auto Scaling Group for Web Tier
 resource "aws_autoscaling_group" "web_asg" {
-  desired_capacity          = 0
-  min_size                  = 0
-  max_size                  = 0
+  desired_capacity          = 2
+  min_size                  = 2
+  max_size                  = 3
   name                      = "${var.project_prefix}-web-asg"
   vpc_zone_identifier       = var.public_web_subnet_ids
 
