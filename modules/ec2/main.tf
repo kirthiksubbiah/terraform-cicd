@@ -1,12 +1,12 @@
-#app tier
-#launch template for app tier
+# App Tier
+# Launch Template for App Tier
 resource "aws_launch_template" "app_launch_template" {
   name_prefix   = "${var.project_prefix}-app-lt-"
   image_id      = "ami-07a6f770277670015"
   instance_type = "t3.medium"
 
   iam_instance_profile {
-    name = var.aws_iam_instance_profile 
+    name = var.aws_iam_instance_profile
   }
 
   network_interfaces {
@@ -15,12 +15,11 @@ resource "aws_launch_template" "app_launch_template" {
   }
 
   user_data = base64encode(templatefile("${path.module}/scripts/app-userdata.sh", {
-  project_prefix = var.project_prefix
-}))
+    project_prefix = var.project_prefix
+  }))
 
   tag_specifications {
     resource_type = "instance"
-
     tags = {
       Name = "${var.project_prefix}-app-instance"
     }
@@ -35,7 +34,7 @@ resource "aws_launch_template" "app_launch_template" {
   }
 }
 
-#target group for internal loadbalancer
+# Target Group for Internal Load Balancer
 resource "aws_lb_target_group" "app_target_group" {
   name     = "${var.project_prefix}-app-target-group"
   port     = 4000
@@ -56,15 +55,14 @@ resource "aws_lb_target_group" "app_target_group" {
   }
 }
 
-#internal loadbalancer
-
+# Internal Load Balancer
 resource "aws_lb" "internal_app_lb" {
-  name               = "${var.project_prefix}-internal-app-lb"
-  internal           = true
-  load_balancer_type = "application"
-  security_groups    = [var.internal_lb_sg_id]  # The security group created for the internal load balancer
-  subnets            = var.private_app_subnet_ids
-  enable_deletion_protection = false
+  name                        = "${var.project_prefix}-internal-app-lb"
+  internal                    = true
+  load_balancer_type          = "application"
+  security_groups             = [var.internal_lb_sg_id]
+  subnets                     = var.private_app_subnet_ids
+  enable_deletion_protection  = false
   enable_cross_zone_load_balancing = true
 
   tags = {
@@ -87,29 +85,28 @@ resource "aws_lb_listener" "internal_app_listener" {
   }
 }
 
-
-#app tier autoscaling group
+# Auto Scaling Group for App Tier
 resource "aws_autoscaling_group" "app_asg" {
-  desired_capacity     = 0
-  min_size             = 0
-  max_size             = 0
-  name                 = "${var.project_prefix}-app-asg"
-  vpc_zone_identifier  = var.private_app_subnet_ids
+  desired_capacity          = 0
+  min_size                  = 0
+  max_size                  = 0
+  name                      = "${var.project_prefix}-app-asg"
+  vpc_zone_identifier       = var.private_app_subnet_ids
+
   launch_template {
-    id      = aws_launch_template.app_launch_template.id  # The Launch Template we created earlier
+    id      = aws_launch_template.app_launch_template.id
     version = "$Latest"
   }
 
   target_group_arns = [
-    aws_lb_target_group.app_target_group.arn  # Target group created for internal load balancer
+    aws_lb_target_group.app_target_group.arn
   ]
-  
-  health_check_type          = "ELB"
-  health_check_grace_period = 300
-  force_delete              = true
-  wait_for_capacity_timeout  = "0"
-  
-  # Correct tag block for Auto Scaling group
+
+  health_check_type           = "ELB"
+  health_check_grace_period  = 300
+  force_delete                = true
+  wait_for_capacity_timeout   = "0"
+
   tag {
     key                 = "Name"
     value               = "${var.project_prefix}-app-instance"
@@ -121,11 +118,11 @@ resource "aws_autoscaling_group" "app_asg" {
   }
 }
 
-#Webtier
-#launch template for web tier
+# Web Tier
+# Launch Template for Web Tier
 resource "aws_launch_template" "web_launch_template" {
   name_prefix   = "${var.project_prefix}-web-lt-"
-  image_id      = "ami-07a6f770277670015" # Web tier AMI
+  image_id      = "ami-07a6f770277670015"
   instance_type = "t3.medium"
 
   iam_instance_profile {
@@ -138,12 +135,11 @@ resource "aws_launch_template" "web_launch_template" {
   }
 
   user_data = base64encode(templatefile("${path.module}/scripts/web-userdata.sh", {
-  project_prefix = var.project_prefix
-}))
+    project_prefix = var.project_prefix
+  }))
 
   tag_specifications {
     resource_type = "instance"
-
     tags = {
       Name = "${var.project_prefix}-web-instance"
     }
@@ -158,7 +154,7 @@ resource "aws_launch_template" "web_launch_template" {
   }
 }
 
-#target group for external loadbalancer
+# Target Group for External Load Balancer
 resource "aws_lb_target_group" "web_target_group" {
   name     = "${var.project_prefix}-web-target-group"
   port     = 80
@@ -179,14 +175,14 @@ resource "aws_lb_target_group" "web_target_group" {
   }
 }
 
-#loadbalancer for external
+# External Load Balancer
 resource "aws_lb" "external_web_lb" {
-  name               = "${var.project_prefix}-external-web-lb"
-  internal           = false  # public-facing load balancer
-  load_balancer_type = "application"
-  security_groups    = [var.public_lb_sg_id]
-  subnets            = var.public_web_subnet_ids
-  enable_deletion_protection      = false
+  name                        = "${var.project_prefix}-external-web-lb"
+  internal                    = false
+  load_balancer_type          = "application"
+  security_groups             = [var.public_lb_sg_id]
+  subnets                     = var.public_web_subnet_ids
+  enable_deletion_protection  = false
   enable_cross_zone_load_balancing = true
 
   tags = {
@@ -209,26 +205,27 @@ resource "aws_lb_listener" "external_web_listener" {
   }
 }
 
+# Auto Scaling Group for Web Tier
 resource "aws_autoscaling_group" "web_asg" {
-  desired_capacity     = 0
-  min_size             = 0
-  max_size             = 0
-  name                 = "${var.project_prefix}-web-asg"
-  vpc_zone_identifier  = var.public_web_subnet_ids
+  desired_capacity          = 0
+  min_size                  = 0
+  max_size                  = 0
+  name                      = "${var.project_prefix}-web-asg"
+  vpc_zone_identifier       = var.public_web_subnet_ids
 
   launch_template {
-    id      = aws_launch_template.web_launch_template.id  # You'll create this separately
+    id      = aws_launch_template.web_launch_template.id
     version = "$Latest"
   }
 
   target_group_arns = [
-    aws_lb_target_group.web_target_group.arn  # The target group for the external ALB
+    aws_lb_target_group.web_target_group.arn
   ]
 
-  health_check_type          = "ELB"
-  health_check_grace_period = 300
-  force_delete               = true
-  wait_for_capacity_timeout  = "0"
+  health_check_type           = "ELB"
+  health_check_grace_period  = 300
+  force_delete                = true
+  wait_for_capacity_timeout   = "0"
 
   tag {
     key                 = "Name"
