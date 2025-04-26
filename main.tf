@@ -21,20 +21,18 @@ module "rds" {
 }
 
 module "ec2" {
-  source = "./modules/ec2"
-  
-  # depends_on = [module.rds]
-  vpc_id               = module.networking.vpc_id
-  private_app_subnet_ids = module.networking.private_app_subnet_ids
-  public_web_subnet_ids  = module.networking.public_web_subnet_ids
+  source                   = "./modules/ec2"
+  depends_on               = [module.rds]
 
-  private_app_sg_id = module.networking.private_app_sg_id
-  public_web_sg_id  = module.networking.public_web_sg_id
-  internal_lb_sg_id = module.networking.internal_lb_sg_id
-  public_lb_sg_id   = module.networking.public_lb_sg_id
-  
+  vpc_id                   = module.networking.vpc_id
+  private_app_subnet_ids   = module.networking.private_app_subnet_ids
+  public_web_subnet_ids    = module.networking.public_web_subnet_ids
+
+  private_app_sg_id        = module.networking.private_app_sg_id
+  public_web_sg_id         = module.networking.public_web_sg_id
+  internal_lb_sg_id        = module.networking.internal_lb_sg_id
+  public_lb_sg_id          = module.networking.public_lb_sg_id
 
   aws_iam_instance_profile = module.iam.aws_iam_instance_profile
-
-  project_prefix = var.project_prefix
+  project_prefix            = var.project_prefix
 }
