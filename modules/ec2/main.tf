@@ -2,8 +2,8 @@
 # Launch Template for App Tier
 resource "aws_launch_template" "app_launch_template" {
   name_prefix   = "${var.project_prefix}-app-lt-"
-  image_id      = "ami-07a6f770277670015"
-  instance_type = "t3.medium"
+  image_id      = "ami-0b4b56913872844b2"
+  instance_type = "t2.micro"
 
   iam_instance_profile {
     name = var.aws_iam_instance_profile
@@ -87,9 +87,9 @@ resource "aws_lb_listener" "internal_app_listener" {
 
 # Auto Scaling Group for App Tier
 resource "aws_autoscaling_group" "app_asg" {
-  desired_capacity          = 2
-  min_size                  = 2
-  max_size                  = 3
+  desired_capacity          = 1
+  min_size                  = 1
+  max_size                  = 2
   name                      = "${var.project_prefix}-app-asg"
   vpc_zone_identifier       = var.private_app_subnet_ids
 
@@ -122,8 +122,8 @@ resource "aws_autoscaling_group" "app_asg" {
 # Launch Template for Web Tier
 resource "aws_launch_template" "web_launch_template" {
   name_prefix   = "${var.project_prefix}-web-lt-"
-  image_id      = "ami-07a6f770277670015"
-  instance_type = "t3.medium"
+  image_id      = "ami-0b4b56913872844b2"
+  instance_type = "t2.micro"
 
   iam_instance_profile {
     name = var.aws_iam_instance_profile
@@ -207,9 +207,10 @@ resource "aws_lb_listener" "external_web_listener" {
 
 # Auto Scaling Group for Web Tier
 resource "aws_autoscaling_group" "web_asg" {
-  desired_capacity          = 2
-  min_size                  = 2
-  max_size                  = 3
+  depends_on = [aws_autoscaling_group.app_asg]
+  desired_capacity          = 1
+  min_size                  = 1
+  max_size                  = 2
   name                      = "${var.project_prefix}-web-asg"
   vpc_zone_identifier       = var.public_web_subnet_ids
 
