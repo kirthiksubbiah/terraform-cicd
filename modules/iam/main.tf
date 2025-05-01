@@ -25,7 +25,14 @@ resource "aws_iam_role_policy_attachment" "s3_read_only_attach" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "admin_attach" {
+  role       = aws_iam_role.ec2_ssm_s3_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
 resource "aws_iam_instance_profile" "ec2_instance_profile" {
   name = "${var.project_prefix}-EC2SSMAndS3AccessProfile"
   role = aws_iam_role.ec2_ssm_s3_role.name
 }
+
+

@@ -48,7 +48,7 @@
 #rds endpoint
 output "aurora_writer" {
   description = "RDS writer endpoint"
-  value       = module.rds.aurora_writer_endpoint
+  value       = module.rds.aurora_writer
 }
 
 output "internal_app_lb_dns" {

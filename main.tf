@@ -33,3 +33,10 @@ module "ec2" {
   aws_iam_instance_profile = module.iam.aws_iam_instance_profile
   project_prefix           = var.project_prefix
 }
+
+module "waf" {
+  source         = "./modules/waf"
+  depends_on     = [module.ec2]
+  external_web_lb_arn = module.ec2.external_web_lb_arn
+  project_prefix = var.project_prefix
+}

@@ -66,9 +66,3 @@ resource "aws_rds_cluster_instance" "aurora_reader" {
     Name = "${var.project_prefix}-aurora-reader"
   }
 }
-
-# Output the Writer Endpoint
-output "aurora_writer_endpoint" {
-  value = aws_rds_cluster.aurora_cluster.endpoint
-  description = "Writer endpoint of the Aurora cluster"
-}
