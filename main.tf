@@ -35,8 +35,8 @@ module "ec2" {
 }
 
 module "waf" {
-  source         = "./modules/waf"
-  depends_on     = [module.ec2]
+  source              = "./modules/waf"
+  depends_on          = [module.ec2]
   external_web_lb_arn = module.ec2.external_web_lb_arn
-  project_prefix = var.project_prefix
+  project_prefix      = var.project_prefix
 }
