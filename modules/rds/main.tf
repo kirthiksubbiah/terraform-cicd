@@ -15,8 +15,8 @@ resource "aws_rds_cluster" "aurora_cluster" {
   cluster_identifier      = "${var.project_prefix}-aurora-cluster"
   engine                  = "aurora-mysql"
   engine_mode             = "provisioned"
-  master_username         = "jatharthan"
-  master_password         = "jatharthan"
+  master_username         = "juhi"
+  master_password         = "juhichoudhary"
   backup_retention_period = 1
   preferred_backup_window = "07:00-09:00"
   db_subnet_group_name    = var.db_subnet_group_name
