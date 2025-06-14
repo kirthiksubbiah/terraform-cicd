@@ -16,9 +16,9 @@ phases:
   build:
     commands:
       - echo Planning Terraform...
-      - terraform plan -out=tfplan
+      - terraform plan -out=tfplan -lock=false
       - echo Applying Terraform...
-      - terraform apply -auto-approve tfplan
+      - terraform apply -auto-approve -lock=false tfplan
 artifacts:
   files:
     - '**/*'
